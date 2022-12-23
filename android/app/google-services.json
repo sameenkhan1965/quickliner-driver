@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "388817404649",
+    "firebase_url": "https://quckliner-fyp-default-rtdb.firebaseio.com",
+    "project_id": "quckliner-fyp",
+    "storage_bucket": "quckliner-fyp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388817404649:android:4ccc702de7fec0ac3fe678",
+        "android_client_info": {
+          "package_name": "com.sameenkhan.driversapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "388817404649-sq7vnpukk1mhsu5qqvsfv35grme1t68k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEd4nzz3zSBcd_deZmB0sTDuDlu_XyrrA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "388817404649-sq7vnpukk1mhsu5qqvsfv35grme1t68k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
