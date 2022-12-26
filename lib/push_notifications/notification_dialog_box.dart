@@ -123,6 +123,24 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20.0),
+
+                  //destination location with icon
+                  Row(
+                    children: [
+                      Icon(Icons.event_seat_sharp,color: Colors.white,size: 26,),
+                      const SizedBox(width: 14,),
+                      Expanded(
+                        child: Text(
+                          widget.userRideRequestDetails!.noOfSeats!,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
