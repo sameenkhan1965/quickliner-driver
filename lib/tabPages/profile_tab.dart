@@ -70,7 +70,7 @@ class _ProfileTabPageState extends State<ProfileTabPage>
             ),
 
             InfoDesignUIWidget(
-              textInfo: onlineDriverData.car_color! + " " + onlineDriverData.car_model! + " " +  onlineDriverData.car_number!,
+              textInfo: onlineDriverData.carColor! + " " + onlineDriverData.carModel! + " " +  onlineDriverData.carNumber!,
               iconData: Icons.car_repair,
             ),
 

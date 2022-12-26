@@ -84,14 +84,14 @@ class _HomeTabPageState extends State<HomeTabPage>
         onlineDriverData.name = (snap.snapshot.value as Map)["name"];
         onlineDriverData.phone = (snap.snapshot.value as Map)["phone"];
         onlineDriverData.email = (snap.snapshot.value as Map)["email"];
-        onlineDriverData.car_color = (snap.snapshot.value as Map)["car_details"]["car_color"];
-        onlineDriverData.car_model = (snap.snapshot.value as Map)["car_details"]["car_model"];
-        onlineDriverData.car_number = (snap.snapshot.value as Map)["car_details"]["car_number"];
+        onlineDriverData.carColor = (snap.snapshot.value as Map)["car_details"]["car_color"];
+        onlineDriverData.carModel = (snap.snapshot.value as Map)["car_details"]["car_model"];
+        onlineDriverData.carNumber = (snap.snapshot.value as Map)["car_details"]["car_number"];
 
         print("Car Details :: ");
-        print(onlineDriverData.car_color);
-        print(onlineDriverData.car_model);
-        print(onlineDriverData.car_number);
+        print(onlineDriverData.carColor);
+        print(onlineDriverData.carModel);
+        print(onlineDriverData.carNumber);
       }
     });
 
