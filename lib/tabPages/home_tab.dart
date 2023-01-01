@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:drivers_app/assistants/assistant_methods.dart';
+import 'package:drivers_app/broad_cast_ride/broad_cast_ride_widget.dart';
 import 'package:drivers_app/global/global.dart';
 import 'package:drivers_app/main.dart';
 import 'package:drivers_app/push_notifications/push_notification_system.dart';
@@ -140,6 +141,23 @@ class _HomeTabPageState extends State<HomeTabPage>
         )
             : Container(),
 
+        statusText =="Now Online"?Positioned(
+          top: MediaQuery.of(context).size.height*0.4,
+          bottom: MediaQuery.of(context).size.height*0.4,
+          left: MediaQuery.of(context).size.width*0.3,
+          right: MediaQuery.of(context).size.width*0.3,
+          child: GestureDetector(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>BroadCastRide()));
+            },
+            child: Container(
+              color: Colors.transparent,
+              width: 50,
+              height: 50,
+              child: Text("Broad Cast Ride",style: TextStyle(color: Colors.white),),
+            ),
+          ),
+        ):SizedBox(),
         //button for online offline driver
         Positioned(
           top: statusText != "Now Online"
