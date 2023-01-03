@@ -1,3 +1,4 @@
+import 'package:drivers_app/broad_cast_ride/broad_cast_ride_widget.dart';
 import 'package:drivers_app/tabPages/earning_tab.dart';
 import 'package:drivers_app/tabPages/home_tab.dart';
 import 'package:drivers_app/tabPages/profile_tab.dart';
@@ -40,8 +41,9 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
         controller: tabController,
-        children: const [
+        children:[
           HomeTabPage(),
+          BroadCastRide(),
           EarningsTabPage(),
           RatingsTabPage(),
           ProfileTabPage(),
@@ -53,6 +55,10 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: "Ride",
           ),
 
           BottomNavigationBarItem(
@@ -69,6 +75,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             icon: Icon(Icons.person),
             label: "Account",
           ),
+
 
         ],
         unselectedItemColor: Colors.white54,
