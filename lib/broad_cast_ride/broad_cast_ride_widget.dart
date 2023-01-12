@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:drivers_app/assistants/assistant_methods.dart';
-import 'package:drivers_app/broad_cast_ride/pay_fare_amount_dialog.dart';
-import 'package:drivers_app/broad_cast_ride/rate_driver_screen.dart';
-import 'package:drivers_app/broad_cast_ride/search_places_screen.dart';
+import 'package:drivers_app/broad_cast_ride/search_places_screen1.dart';
+import 'package:drivers_app/broad_cast_ride/search_places_screen2.dart';
+import 'package:drivers_app/broad_cast_ride/search_places_screen3.dart';
 import 'package:drivers_app/global/global.dart';
 import 'package:drivers_app/infoHandler/app_info.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -38,7 +38,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
     zoom: 14.4746,
   );
 
-  double searchLocationContainerHeight = 300;
+  double searchLocationContainerHeight = 400;
   double waitingResponseFromDriverContainerHeight = 0;
   double assignedDriverInfoContainerHeight = 0;
 
@@ -70,6 +70,11 @@ class _BroadCastRideState extends State<BroadCastRide> {
   String userRideRequestStatus = "";
   bool requestPositionInfo = true;
 
+
+
+
+
+  //checking for permissions
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
@@ -78,6 +83,10 @@ class _BroadCastRideState extends State<BroadCastRide> {
     }
   }
 
+
+
+
+  //driver's current location
   locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -115,13 +124,15 @@ class _BroadCastRideState extends State<BroadCastRide> {
     //1. save the RideRequest Information
     referenceRideRequest = FirebaseDatabase.instance
         .ref()
-        .child("All Ride Requests")
+        .child("Broadcast Rides")
         .push(); //push is for generating a random unique id
 
     var originLocation =
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-    var destinationLocation =
+    var destinationLocation1=
         Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+    var destinationLocation2 =
+        Provider.of<AppInfo>(context, listen: false).userDropOffLocation2;
 
     //for lat and lang
     Map originLocationMap = {
@@ -131,22 +142,32 @@ class _BroadCastRideState extends State<BroadCastRide> {
       "longitude": originLocation.locationLongitude.toString(),
     };
 
-    Map destinationLocationMap = {
+    Map destinationLocationMap1 = {
       //yh ggogle map ni hai yh bs aik obj type hai jo key ki basis py work krta hai or save krta
       //"key" : value
-      "latitude": destinationLocation!.locationLatitude.toString(),
-      "longitude": destinationLocation.locationLongitude.toString(),
+      "latitude": destinationLocation1!.locationLatitude.toString(),
+      "longitude": destinationLocation1.locationLongitude.toString(),
     };
+
+    Map destinationLocationMap2 = {
+      //yh ggogle map ni hai yh bs aik obj type hai jo key ki basis py work krta hai or save krta
+      //"key" : value
+      "latitude": destinationLocation2!.locationLatitude.toString(),
+      "longitude": destinationLocation2.locationLongitude.toString(),
+    };
+
 
     //saving in databse the complete information of user
     Map userInformationMap = {
       "origin": originLocationMap,
-      "destination": destinationLocationMap,
+      "destination1": destinationLocationMap1,
+      "destination2": destinationLocationMap1,
       "time": DateTime.now().toString(),
       "userName": driverName,
       "userPhone": driverPhone,
       "originAddress": originLocation.locationName,
-      "destinationAddress": destinationLocation.locationName,
+      "destinationAddress1": destinationLocation1.locationName,
+      "destinationAddress2": destinationLocation2.locationName,
       "driverId": "waiting",
       "rideType":"broadCastRide",
       "noOfSeats":'$noOfSeat',
@@ -154,6 +175,8 @@ class _BroadCastRideState extends State<BroadCastRide> {
 
     referenceRideRequest!.set(userInformationMap);
 
+
+    //db se details fetch ho ri driver ki
     tripRideRequestInfoStreamSubscription =
         referenceRideRequest!.onValue.listen((eventSnap) async {
           if (eventSnap.snapshot.value == null) {
@@ -197,6 +220,8 @@ class _BroadCastRideState extends State<BroadCastRide> {
             LatLng driverCurrentPositionLatLng =
             LatLng(driverCurrentPositionLat, driverCurrentPositionLng);
 
+
+            /*
             //status = accepted
             if (userRideRequestStatus == "accepted") {
               updateArrivalTimeToUserPickupLocation(driverCurrentPositionLatLng);
@@ -245,7 +270,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
                   }
                 }
               }
-            }
+            }*/
           }
         });
 
@@ -254,214 +279,11 @@ class _BroadCastRideState extends State<BroadCastRide> {
     // searchNearestOnlineDrivers();
   }
 
-  updateArrivalTimeToUserPickupLocation(driverCurrentPositionLatLng) async {
-    if (requestPositionInfo == true) {
-      requestPositionInfo = false;
 
-      LatLng userPickUpPosition =
-      LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
 
-      var directionDetailsInfo =
-      await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-        driverCurrentPositionLatLng,
-        userPickUpPosition,
-      );
-
-      if (directionDetailsInfo == null) {
-        return;
-      }
-
-      setState(() {
-        driverRideStatus =
-        "Driver is Coming :: ${directionDetailsInfo.duration_text}";
-      });
-
-      requestPositionInfo = true;
-    }
-  }
-
-  updateReachingTimeToUserDropOffLocation(driverCurrentPositionLatLng) async {
-    if (requestPositionInfo == true) {
-      requestPositionInfo = false;
-
-      var dropOffLocation =
-          Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
-
-      LatLng userDestinationPosition = LatLng(
-          dropOffLocation!.locationLatitude!,
-          dropOffLocation!.locationLongitude!);
-
-      var directionDetailsInfo =
-      await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-        driverCurrentPositionLatLng,
-        userDestinationPosition,
-      );
-
-      if (directionDetailsInfo == null) {
-        return;
-      }
-
-      setState(() {
-        driverRideStatus =
-        "Going towards Destination :: ${directionDetailsInfo.duration_text}";
-      });
-
-      requestPositionInfo = true;
-    }
-  }
-
-  // searchNearestOnlineDrivers() async {
-  //   //no active driver available
-  //   if (onlineNearByAvailableDriversList.length == 0) {
-  //     //cancel/delete the RideRequest Information
-  //     referenceRideRequest!.remove();
-  //     setState(() {
-  //       polyLineSet.clear();
-  //       markersSet.clear();
-  //       circlesSet.clear();
-  //       pLineCoOrdinatesList.clear();
-  //     });
-  //
-  //     Fluttertoast.showToast(
-  //         msg:
-  //         "No Online Nearest Driver Available. Search Again after some time, Restarting App Now.");
-  //
-  //     //dealy kr re restart 3 sec
-  //     // Future.delayed(const Duration(milliseconds: 4000), ()
-  //     // {
-  //     //   Navigator.pop(context);
-  //     //   // SystemNavigator.pop();//refresh our app
-  //     // });
-  //
-  //     return;
-  //   }
-  //
-  //   //active driver available
-  //   await retrieveOnlineDriversInformation(onlineNearByAvailableDriversList);
-  //
-  //   var response = await Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (c) => SelectNearestActiveDriversScreen(
-  //               referenceRideRequest: referenceRideRequest)));
-  //
-  //   if (response == "driverChoosed") {
-  //     FirebaseDatabase.instance
-  //         .ref()
-  //         .child("drivers")
-  //         .child(chosenDriverId!)
-  //         .once()
-  //         .then((snap) {
-  //       if (snap.snapshot.value != null) {
-  //         //send notification to that specific driver
-  //         sendNotificationToDriverNow(chosenDriverId!);
-  //
-  //         //Display Waiting Response UI from a Driver
-  //         showWaitingResponseFromDriverUI();
-  //
-  //         //Response from a Driver
-  //         FirebaseDatabase.instance
-  //             .ref()
-  //             .child("drivers")
-  //             .child(chosenDriverId!)
-  //             .child("newRideStatus")
-  //             .onValue
-  //             .listen((eventSnapshot) {
-  //           //1. driver has cancel the rideRequest :: Push Notification
-  //           // (newRideStatus = idle)
-  //           if (eventSnapshot.snapshot.value == "idle") {
-  //             Fluttertoast.showToast(
-  //                 msg:
-  //                 "The driver has cancelled your request. Please choose another driver.");
-  //
-  //             Future.delayed(const Duration(milliseconds: 3000), () {
-  //               Fluttertoast.showToast(msg: "Please Restart App Now.");
-  //
-  //               // SystemNavigator.pop();
-  //             });
-  //           }
-  //
-  //           //2. driver has accept the rideRequest :: Push Notification
-  //           // (newRideStatus = accepted)
-  //           if (eventSnapshot.snapshot.value == "accepted") {
-  //             //design and display ui for displaying assigned driver information
-  //             showUIForAssignedDriverInfo();
-  //           }
-  //         });
-  //       } else {
-  //         Fluttertoast.showToast(msg: "This driver do not exist. Try again.");
-  //       }
-  //     });
-  //   }
-  // }
-
-  showUIForAssignedDriverInfo() {
-    setState(() {
-      waitingResponseFromDriverContainerHeight = 0;
-      searchLocationContainerHeight = 0;
-      assignedDriverInfoContainerHeight = 240;
-    });
-  }
-
-  showWaitingResponseFromDriverUI() {
-    setState(() {
-      searchLocationContainerHeight = 0;
-      waitingResponseFromDriverContainerHeight = 220;
-    });
-  }
-
-  sendNotificationToDriverNow(String chosenDriverId) {
-    //assign/SET rideRequestId to newRideStatus in
-    // Drivers Parent node for that specific choosen driver
-    FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(chosenDriverId)
-        .child("newRideStatus")
-        .set(referenceRideRequest!.key);
-
-    //automate the push notification service
-    FirebaseDatabase.instance
-        .ref()
-        .child("drivers")
-        .child(chosenDriverId)
-        .child("token")
-        .once()
-        .then((snap) {
-      if (snap.snapshot.value != null) {
-        String deviceRegistrationToken = snap.snapshot.value.toString();
-
-        //send Notification Now
-        sendNotificationToDriverNow(
-          deviceRegistrationToken,
-        );
-
-        Fluttertoast.showToast(msg: "Notification sent Successfully.");
-      } else {
-        Fluttertoast.showToast(msg: "Please choose another driver.");
-        return;
-      }
-    });
-  }
-
-  retrieveOnlineDriversInformation(List onlineNearestDriversList) async {
-    DatabaseReference ref = FirebaseDatabase.instance.ref().child("drivers");
-    for (int i = 0; i < onlineNearestDriversList.length; i++) {
-      await ref
-          .child(onlineNearestDriversList[i].driverId.toString())
-          .once()
-          .then((dataSnapshot) {
-        var driverKeyInfo =
-            dataSnapshot.snapshot.value; //value le k aa ra db se
-        // dList.add(driverKeyInfo);
-        //print("driver's key info" + dList.toString());
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    createActiveNearByDriverIconMarker();
     return Scaffold(
       body: Stack(children: [
         GoogleMap(
@@ -516,6 +338,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
           child: AnimatedSize(
             curve: Curves.easeIn,
             duration: const Duration(milliseconds: 120),
+            //overall container for ride broadcast generation
             child: Container(
               height: searchLocationContainerHeight,
               decoration: const BoxDecoration(
@@ -530,7 +353,8 @@ class _BroadCastRideState extends State<BroadCastRide> {
                 const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                 child: Column(
                   children: [
-                    //from
+
+                    // pickup point - from
                     Row(
                       children: [
                         const Icon(
@@ -568,14 +392,23 @@ class _BroadCastRideState extends State<BroadCastRide> {
                       color: Colors.grey,
                     ),
                     const SizedBox(height: 16.0),
-                    //to
+
+
+
+
+
+                    //DROP OFF POINT # 1
                     GestureDetector(
                       onTap: () async {
-                        //go to search places screen
+
+
+                        //go to search places screen and brings response from that screen
                         var responseFromSearchScreen = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (c) => SearchPlacesScreen()));
+                                builder: (c) => SearchPlacesScreen1()));
+
+
 
                         if (responseFromSearchScreen == "obtainedDropoff") {
                           //draw routes - draw polyline
@@ -606,7 +439,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
                                     ? Provider.of<AppInfo>(context)
                                     .userDropOffLocation!
                                     .locationName!
-                                    : "Where to go?",
+                                    : "1st Drop Off?",
                                 style: const TextStyle(
                                     color: Colors.grey, fontSize: 14),
                               ),
@@ -615,6 +448,12 @@ class _BroadCastRideState extends State<BroadCastRide> {
                         ],
                       ),
                     ),
+
+
+
+
+
+
                     const SizedBox(height: 10.0),
                     const Divider(
                       height: 1,
@@ -622,6 +461,74 @@ class _BroadCastRideState extends State<BroadCastRide> {
                       color: Colors.grey,
                     ),
                     const SizedBox(height: 16.0),
+
+
+
+
+
+                    //DROP OFF POINT # 2
+                    GestureDetector(
+                      onTap: () async {
+                        //go to search places screen
+                        var responseFromSearchScreen = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (c) => SearchPlacesScreen2()));
+
+                        if (responseFromSearchScreen == "obtainedDropoff") {
+                          //draw routes - draw polyline
+                          await drawPolyLineFromOriginToDestination();
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.add_location_alt_outlined,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(
+                            width: 12.0,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "To",
+                                style:
+                                TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Text(
+                                Provider.of<AppInfo>(context)
+                                    .userDropOffLocation2 !=
+                                    null
+                                    ? Provider.of<AppInfo>(context)
+                                    .userDropOffLocation2!
+                                    .locationName!
+                                    : "2nd Drop Off?",
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+
+
+
+                    const SizedBox(height: 10.0),
+                    const Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16.0),
+
+
+
+
+                    // NO OF SEATS
                     Row(
                       children: [
                         const Icon(
@@ -672,6 +579,10 @@ class _BroadCastRideState extends State<BroadCastRide> {
 
                     const SizedBox(height: 16.0),
 
+
+
+                    //CREATE BROADCAST
+
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -690,7 +601,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: Colors.green,
+                              primary: Color(0xff416d6d) ,
                               textStyle: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold)),
                           child: const Text(
@@ -705,164 +616,10 @@ class _BroadCastRideState extends State<BroadCastRide> {
             ),
           ),
         ),
-
-        //ui for waiting response from driver
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            height: waitingResponseFromDriverContainerHeight,
-            decoration: const BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20),
-                topLeft: Radius.circular(20),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: AnimatedTextKit(
-                  animatedTexts: [
-                    FadeAnimatedText(
-                      'Waiting for Response\nfrom Driver',
-                      duration: const Duration(seconds: 6),
-                      textAlign: TextAlign.center,
-                      textStyle: const TextStyle(
-                          fontSize: 30.0,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    ScaleAnimatedText(
-                      'Please wait...',
-                      duration: const Duration(seconds: 10),
-                      textAlign: TextAlign.center,
-                      textStyle: const TextStyle(
-                          fontSize: 32.0,
-                          color: Colors.white,
-                          fontFamily: 'Canterbury'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-
-        //ui for displaying assigned driver information
-        Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: assignedDriverInfoContainerHeight,
-              decoration: const BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20),
-                  topLeft: Radius.circular(20),
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //status of ride
-                    Center(
-                      child: Text(
-                        driverRideStatus,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white54,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-
-                    const Divider(
-                      height: 2,
-                      thickness: 2,
-                      color: Colors.white54,
-                    ),
-
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-
-                    //driver vehicle details
-                    Text(
-                      driverCarDetails,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white54,
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 2.0,
-                    ),
-
-                    //driver name
-                    Text(
-                      driverName,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white54,
-                      ),
-                    ),
-
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-
-                    const Divider(
-                      height: 2,
-                      thickness: 2,
-                      color: Colors.white54,
-                    ),
-
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    //call driver button
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.teal,
-                        ),
-                        icon: const Icon(
-                          Icons.phone_android,
-                          color: Colors.black54,
-                          size: 22,
-                        ),
-                        label: const Text(
-                          "Call Driver",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ))
-      ]),
+    ]
+      ),
     );
+
   }
 
   Future<void> drawPolyLineFromOriginToDestination() async {
@@ -870,11 +627,15 @@ class _BroadCastRideState extends State<BroadCastRide> {
         Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
     var destinationPosition =
         Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+    var destinationPosition2 =
+        Provider.of<AppInfo>(context, listen: false).userDropOffLocation2;
 
     var originLatLng = LatLng(
         originPosition!.locationLatitude!, originPosition.locationLongitude!);
     var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
         destinationPosition.locationLongitude!);
+    var destinationLatLng2 = LatLng(destinationPosition2!.locationLatitude!,
+        destinationPosition2.locationLongitude!);
 
     showDialog(
       context: context,
@@ -885,7 +646,7 @@ class _BroadCastRideState extends State<BroadCastRide> {
 
     var directionDetailsInfo =
     await AssistantMethods.obtainOriginToDestinationDirectionDetails(
-        originLatLng, destinationLatLng); //directions le re hain
+        originLatLng, destinationLatLng2); //directions le re hain
     setState(() {
     });
 
@@ -962,9 +723,18 @@ class _BroadCastRideState extends State<BroadCastRide> {
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     );
 
+    Marker destinationMarker2 = Marker(
+      markerId: const MarkerId("destinationID2"),
+      infoWindow: InfoWindow(
+          title: destinationPosition2.locationName, snippet: "Destination2"),
+      position: destinationLatLng2,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+    );
+
     setState(() {
       markersSet.add(originMarker);
       markersSet.add(destinationMarker);
+      markersSet.add(destinationMarker2);
     });
 
     Circle originCircle = Circle(
@@ -985,21 +755,23 @@ class _BroadCastRideState extends State<BroadCastRide> {
       center: destinationLatLng,
     );
 
+    Circle destinationCircle2 = Circle(
+      circleId: const CircleId("destinationID2"),
+      fillColor: Colors.red,
+      radius: 12,
+      strokeWidth: 3,
+      strokeColor: Colors.white,
+      center: destinationLatLng,
+    );
+
     setState(() {
       circlesSet.add(originCircle);
       circlesSet.add(destinationCircle);
+      circlesSet.add(destinationCircle2);
     });
   }
 
 
-  createActiveNearByDriverIconMarker() {
-    if (activeNearbyIcon == null) {
-      ImageConfiguration imageConfiguration =
-      createLocalImageConfiguration(context, size: const Size(2, 2));
-      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/car.png")
-          .then((value) {
-        activeNearbyIcon = value;
-      });
-    }
-  }
+
+
 }

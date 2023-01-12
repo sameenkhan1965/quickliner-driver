@@ -126,7 +126,7 @@ class _HomeTabPageState extends State<HomeTabPage>
             newGoogleMapController = controller;
 
             //black theme google map
-            blackThemeGoogleMap(newGoogleMapController);
+          //  blackThemeGoogleMap(newGoogleMapController);
 
             locateDriverPosition();
           },

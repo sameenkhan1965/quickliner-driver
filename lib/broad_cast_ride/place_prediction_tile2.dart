@@ -9,14 +9,14 @@ import '../infoHandler/app_info.dart';
 import '../models/directions.dart';
 
 
-class PlacePredictionTileDesign extends StatelessWidget
+class PlacePredictionTileDesign2 extends StatelessWidget
 {
   final PredictedPlaces? predictedPlaces;
 
-  PlacePredictionTileDesign({this.predictedPlaces});
+  PlacePredictionTileDesign2({this.predictedPlaces});
 
 
-  getPlaceDirectionDetails(String? placeId, context) async
+  getPlaceDirectionDetails2(String? placeId, context) async
   {
     showDialog(
       context: context,
@@ -25,9 +25,9 @@ class PlacePredictionTileDesign extends StatelessWidget
       ),
     );
 
-    String placeDirectionDetailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
+    String placeDirectionDetailsUrl2 = "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$mapKey";
 
-    var responseApi = await RequestAssistant.receiveRequest(placeDirectionDetailsUrl);
+    var responseApi = await RequestAssistant.receiveRequest(placeDirectionDetailsUrl2);
 
     Navigator.pop(context);
 
@@ -44,7 +44,7 @@ class PlacePredictionTileDesign extends StatelessWidget
       directions.locationLatitude = responseApi["result"]["geometry"]["location"]["lat"];
       directions.locationLongitude = responseApi["result"]["geometry"]["location"]["lng"];
 
-      Provider.of<AppInfo>(context, listen: false).updateDropOffLocationAddress(directions);
+      Provider.of<AppInfo>(context, listen: false).updateDropOffLocationAddress2(directions);
 
       Navigator.pop(context, "obtainedDropoff");
     }
@@ -56,10 +56,10 @@ class PlacePredictionTileDesign extends StatelessWidget
     return ElevatedButton(
       onPressed: ()
       {
-        getPlaceDirectionDetails(predictedPlaces!.place_id, context);
+        getPlaceDirectionDetails2(predictedPlaces!.place_id, context);
       },
       style: ElevatedButton.styleFrom(
-        primary: Colors.white24,
+        primary: Colors.black12,
       ),
       child: Padding(
         padding: const EdgeInsets.all(4.0),

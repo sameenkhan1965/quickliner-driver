@@ -4,6 +4,7 @@ import 'package:drivers_app/tabPages/home_tab.dart';
 import 'package:drivers_app/tabPages/profile_tab.dart';
 import 'package:drivers_app/tabPages/ratings_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:drivers_app/global/colors.dart';
 
 class MainScreen extends StatefulWidget
 {
@@ -80,8 +81,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         ],
         unselectedItemColor: Colors.white54,
         selectedItemColor: Colors.white,
-        backgroundColor: Colors.black,
         type: BottomNavigationBarType.fixed,
+        backgroundColor: Color(0xff416d6d),
         selectedLabelStyle: const TextStyle(fontSize: 14),
         showUnselectedLabels: true,
         currentIndex: selectedIndex,

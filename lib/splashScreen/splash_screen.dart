@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:drivers_app/authentication/login_screen.dart';
 import 'package:drivers_app/global/global.dart';
 import 'package:drivers_app/mainScreens/main_screen.dart';
+import 'package:drivers_app/splashScreen/splash_screen2.dart';
 import 'package:flutter/material.dart';
 import 'package:drivers_app/configuraton/configuration.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -22,7 +23,7 @@ class _MySplashScreenState extends State<MySplashScreen>
 {
   startTimer()
   {
-    Timer(const Duration(seconds: 3), () async
+    Timer(const Duration(seconds: 7), () async
     {
       if(await fAuth.currentUser != null)
       {
@@ -31,7 +32,7 @@ class _MySplashScreenState extends State<MySplashScreen>
       }
       else
       {
-        Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> MySplashScreen2()));
       }
     });
   }
@@ -50,29 +51,93 @@ class _MySplashScreenState extends State<MySplashScreen>
   {
     return Material(
       child: Container(
-        color: primaryGreen,
+        color: Colors.white,
         child: Center(
-          child: Column(
+          child:Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text("QuickLiner",style: TextStyle(
+                color: primaryGreen,
+                fontWeight: FontWeight.bold,
+                fontSize: 50,
+              ), ),
+              SizedBox(height: 260,width:260,
+                child:  Image.asset("images/time.png"),
+              ),
+              const DefaultTextStyle(
+                  style: TextStyle(
+                    fontSize: 19.0,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2.0,
+                    color: Color(0xFF121212),
+                    fontFamily: "myFont1",
+                  ),
+                  child:  Text(
+                      "Make your lives easy"
+                  )
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: const DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      //fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                      color: Color(0xFF121212),
+                      fontFamily: "myFont2",
+                    ),
+                    textAlign: TextAlign.center,
+                    child: Text(
+                        "Book rides based on your availability and choice."
+                            "  Schedule a ride or book a permanent ride anywhere anytime "
+                    )
 
-              Image.asset("images/logo1.png"),
-
-              const SizedBox(height: 10,),
-
-              const Text(
-                "QuickLiner App",
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold
                 ),
               ),
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                },
+                child: Container(
+                  height: 120,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      //  Expanded(
+                      Stack(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(10.0),
+                            height:50,
+                            width: 260,
+                            decoration: BoxDecoration(color:primaryGreen,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: shadowList,
+                            ),
+                            margin: EdgeInsets.only(top: 0, left: 55),
+                            child: Text(
+                              " Skip",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 20,
+                                  color: Colors.white
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
 
+                  ),
+                ),
+              )
             ],
           ),
+
+
         ),
-      ),
+        ),
+
     );
   }
 }
