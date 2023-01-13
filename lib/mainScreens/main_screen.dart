@@ -4,7 +4,8 @@ import 'package:drivers_app/tabPages/home_tab.dart';
 import 'package:drivers_app/tabPages/profile_tab.dart';
 import 'package:drivers_app/tabPages/ratings_tab.dart';
 import 'package:flutter/material.dart';
-import 'package:drivers_app/global/colors.dart';
+
+import '../tabPages/availablerides.dart';
 
 class MainScreen extends StatefulWidget
 {
@@ -45,8 +46,9 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         children:[
           HomeTabPage(),
           BroadCastRide(),
+          AvailableRidesTabPage(),
           EarningsTabPage(),
-          RatingsTabPage(),
+          // RatingsTabPage(),
           ProfileTabPage(),
         ],
       ),
@@ -61,16 +63,19 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
             icon: Icon(Icons.add),
             label: "Ride",
           ),
-
+          BottomNavigationBarItem(
+            icon: Icon(Icons.car_crash),
+            label: "My Rides",
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.credit_card),
             label: "Earnings",
           ),
 
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: "Ratings",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.star),
+          //   label: "Ratings",
+          // ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -81,8 +86,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         ],
         unselectedItemColor: Colors.white54,
         selectedItemColor: Colors.white,
+        backgroundColor: Colors.black,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Color(0xff416d6d),
         selectedLabelStyle: const TextStyle(fontSize: 14),
         showUnselectedLabels: true,
         currentIndex: selectedIndex,

@@ -61,34 +61,15 @@ class AssistantMethods
     return directionDetailsInfo;
   }
 
-
-  static Future<DirectionDetailsInfo?> obtainBroadcastOriginToDestinationDirectionDetails(LatLng origionPosition, LatLng destinationPosition, LatLng destinationPosition2) async
-  {
-    String urlOriginToDestinationDirectionDetails = "https://maps.googleapis.com/maps/api/directions/json?origin=${origionPosition.latitude},${origionPosition.longitude}&destination2=${destinationPosition2.latitude},${destinationPosition2.longitude}&key=$mapKey";
-
-    var responseDirectionApi = await RequestAssistant.receiveRequest(urlOriginToDestinationDirectionDetails);
-
-    if(responseDirectionApi == "Error Occurred, Failed. No Response.")
-    {
-      return null;
-    }
-
-    DirectionDetailsInfo directionDetailsInfo = DirectionDetailsInfo();
-    directionDetailsInfo.e_points = responseDirectionApi["routes"][0]["overview_polyline"]["points"];
-
-    directionDetailsInfo.distance_text = responseDirectionApi["routes"][0]["legs"][0]["distance"]["text"];
-    directionDetailsInfo.distance_value = responseDirectionApi["routes"][0]["legs"][0]["distance"]["value"];
-
-    directionDetailsInfo.duration_text = responseDirectionApi["routes"][0]["legs"][0]["duration"]["text"];
-    directionDetailsInfo.duration_value = responseDirectionApi["routes"][0]["legs"][0]["duration"]["value"];
-
-    return directionDetailsInfo;
-  }
-
   static pauseLiveLocationUpdates()
   {
-    streamSubscriptionPosition!.pause();
-    Geofire.removeLocation(currentFirebaseUser!.uid);
+    try {
+      streamSubscriptionPosition!.pause();
+      Geofire.removeLocation(currentFirebaseUser!.uid);
+    }
+    catch(e){
+
+    }
   }
 
   static resumeLiveLocationUpdates()

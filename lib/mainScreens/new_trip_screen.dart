@@ -632,8 +632,12 @@ class _NewTripScreenState extends State<NewTripScreen>
       "longitude": driverCurrentPosition!.longitude.toString(),
     };
     databaseReference.child("driverLocation").set(driverLocationDataMap);
-
-    databaseReference.child("status").set("accepted");
+    if(widget.userRideRequestDetails?.rideType=="permanentRide" || widget.userRideRequestDetails?.rideType=="scheduleRide") {
+      databaseReference.child("status").set("started");
+    }
+    else{
+      databaseReference.child("status").set("accepted");
+    }
     databaseReference.child("driverId").set(onlineDriverData.id);
     databaseReference.child("driverName").set(onlineDriverData.name);
     databaseReference.child("driverPhone").set(onlineDriverData.phone);

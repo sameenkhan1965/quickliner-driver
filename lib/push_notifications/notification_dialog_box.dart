@@ -6,8 +6,9 @@ import 'package:drivers_app/models/user_ride_request_information.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:intl/intl.dart';
 
 
 class NotificationDialogBox extends StatefulWidget
@@ -25,6 +26,29 @@ class NotificationDialogBox extends StatefulWidget
 
 class _NotificationDialogBoxState extends State<NotificationDialogBox>
 {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+  final AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  initilize() async {
+    final InitializationSettings initializationSettings =
+    InitializationSettings(
+      android: initializationSettingsAndroid,);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+    initilize();
+    // the initialization settings are initialized after they are setted
+
+  }
+
+
   @override
   Widget build(BuildContext context)
   {
@@ -235,7 +259,27 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
       ),
     );
   }
+  saveAssignedDriverDetailsToUserRideRequest()
+  {
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref()
+        .child("All Ride Requests")
+        .child(widget.userRideRequestDetails!.rideRequestId!);
 
+    Map driverLocationDataMap =
+    {
+      "latitude": driverCurrentPosition!.latitude.toString(),
+      "longitude": driverCurrentPosition!.longitude.toString(),
+    };
+    databaseReference.child("driverLocation").set(driverLocationDataMap);
+
+    databaseReference.child("status").set("accepted");
+    databaseReference.child("driverId").set(onlineDriverData.id);
+    databaseReference.child("driverName").set(onlineDriverData.name);
+    databaseReference.child("driverPhone").set(onlineDriverData.phone);
+    databaseReference.child("car_details").set(onlineDriverData.carColor.toString() + " " + onlineDriverData.carModel.toString() + onlineDriverData.carNumber.toString());
+
+    // saveRideRequestIdToDriverHistory();
+  }
   acceptRideRequest(BuildContext context)
   {
     String getRideRequestId="";
@@ -254,7 +298,7 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
       {
         Fluttertoast.showToast(msg: "This ride request do not exists.");
       }
-
+      print("type in UIIII--->>>> ${widget.userRideRequestDetails?.rideType}");
       if(getRideRequestId == widget.userRideRequestDetails!.rideRequestId)
       {
         FirebaseDatabase.instance.ref()
@@ -262,16 +306,86 @@ class _NotificationDialogBoxState extends State<NotificationDialogBox>
             .child(currentFirebaseUser!.uid)
             .child("newRideStatus")
             .set("accepted");
-
+        // widget.userRideRequestDetails.
         AssistantMethods.pauseLiveLocationUpdates();
+        // print("type in UIIII--->>>> ${widget.userRideRequestDetails?.rideType}");
+      if(widget.userRideRequestDetails?.rideType=="permanentRide"){
+        DateTime dt = DateFormat("yyyy-MM-dd").parse('${widget.userRideRequestDetails?.startDate}');
+        DateTime dt2 = DateFormat("yyyy-MM-dd").parse('${widget.userRideRequestDetails?.endDate}');
+        List<DateTime> days = [];
+        for (int i = 0; i <= dt2.difference(dt).inDays; i++) {
+          var day = dt.add(Duration(days: i));
+          var d__ = DateFormat("yyyy-MM-dd").format(day).toString();
+          DateTime dt_notify = DateFormat("yyyy-MM-dd hh:mm a").parse('${d__} ${widget.userRideRequestDetails?.startTimeO}');
+          DateTime dt2_notify = dt.subtract(Duration(minutes: 5));
 
+          DateTime dt_notify2 = DateFormat("yyyy-MM-dd hh:mm a").parse('${d__} ${widget.userRideRequestDetails?.startTimeD}');
+          DateTime dt2_notify2 = dt.subtract(Duration(minutes: 5));
+          flutterLocalNotificationsPlugin.schedule(1, "Permanent Ride is about to start", "The ride with ${widget.userRideRequestDetails?.userName} is starting in 5 minutes", dt2_notify,  const NotificationDetails(
+
+            // Android details
+            android: AndroidNotificationDetails('main_channel', 'Main Channel',
+                channelDescription: "quickliner",
+                importance: Importance.max,
+                priority: Priority.max),
+
+          ),
+          );
+          flutterLocalNotificationsPlugin.schedule(1, "Permanent Ride is about to start", "The ride with ${widget.userRideRequestDetails?.userName} is starting in 5 minutes", dt2_notify2,  const NotificationDetails(
+
+            // Android details
+            android: AndroidNotificationDetails('main_channel', 'Main Channel',
+                channelDescription: "quickliner",
+                importance: Importance.max,
+                priority: Priority.max),
+
+          ),
+          );
+          saveAssignedDriverDetailsToUserRideRequest();
+        }
+
+
+      }
+      else if(widget.userRideRequestDetails?.rideType=="scheduleRide"){
+          DateTime dt = DateFormat("yyyy-MM-dd hh:mm a").parse('${widget.userRideRequestDetails?.scheduleDate} ${widget.userRideRequestDetails?.scheduleTime}');
+          DateTime dt2 = dt.subtract(Duration(minutes: 5));
+          flutterLocalNotificationsPlugin.schedule(1, "Schedule Ride is about to start", "The ride with ${widget.userRideRequestDetails?.userName} is starting in 5 minutes", dt2,  const NotificationDetails(
+
+            // Android details
+            android: AndroidNotificationDetails('main_channel', 'Main Channel',
+                channelDescription: "quickliner",
+                importance: Importance.max,
+                priority: Priority.max),
+
+          ),
+          );
+          saveAssignedDriverDetailsToUserRideRequest();
+        }
+
+        else{
+          Navigator.push(context, MaterialPageRoute(builder: (c)=> NewTripScreen(
+            userRideRequestDetails: widget.userRideRequestDetails,
+          )));
+        }
+        Navigator.pop(context);
+        // Future.delayed(const Duration(milliseconds: 3000), ()
+        // {
+        //   SystemNavigator.pop();
+        // });
         //trip started now - send driver to new tripScreen
-        Navigator.push(context, MaterialPageRoute(builder: (c)=> NewTripScreen(
-          userRideRequestDetails: widget.userRideRequestDetails,
-        )));
+        // Navigator.push(context, MaterialPageRoute(builder: (c)=> NewTripScreen(
+        //   userRideRequestDetails: widget.userRideRequestDetails,
+        // )));
       }
       else
       {
+        // DateTime dt = DateFormat("yyyy-MM-dd").parse('${widget.userRideRequestDetails?.startDate}');
+        // DateTime dt2 = DateFormat("yyyy-MM-dd").parse('${widget.userRideRequestDetails?.endDate}');
+        // print("dt ${dt} ${dt2}");
+        // var d__ = DateFormat("yyyy-MM-dd").format(dt).toString();
+        // print("next ${d__}");
+        // DateTime dt_notify = DateFormat("yyyy-MM-dd hh:mm a").parse('${d__} ${widget.userRideRequestDetails?.startTimeO}');
+        // print("third--->> ${dt_notify}");
         Fluttertoast.showToast(msg: "This Ride Request do not exists.");
       }
     });

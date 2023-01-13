@@ -12,6 +12,13 @@ class UserRideRequestInformation
   String? noOfSeats;
   String? rideType;
 
+  var scheduleTime;
+  var scheduleDate;
+  var startDate;
+  var endDate;
+  var startTimeO;
+  var startTimeD;
+
   UserRideRequestInformation({
     this.originLatLng,
     this.destinationLatLng,
@@ -21,6 +28,13 @@ class UserRideRequestInformation
     this.userName,
     this.userPhone,
     this.rideType,
+    this.scheduleTime,
+    this.scheduleDate,
+    this.startDate,
+    this.endDate,
+    this.startTimeD,
+    this.startTimeO
+
   });
 //we cannot access the data without the model class i.e. outside the if condition we cannot access them
 }

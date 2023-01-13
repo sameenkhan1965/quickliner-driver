@@ -1,29 +1,27 @@
-import 'package:drivers_app/broad_cast_ride/place_prediction_tile1.dart';
-import 'package:drivers_app/broad_cast_ride/place_prediction_tile2.dart';
+import 'package:drivers_app/broad_cast_ride/place_prediction_tile.dart';
 import 'package:flutter/material.dart';
 
 
 import '../assistants/request_assistant.dart';
 import '../global/map_key.dart';
 import '../models/predicted_places.dart';
-import 'package:drivers_app/global/colors.dart';
 
 
-class SearchPlacesScreen2 extends StatefulWidget
+class SearchPlacesScreen extends StatefulWidget
 {
 
   @override
-  _SearchPlacesScreen2State createState() => _SearchPlacesScreen2State();
+  _SearchPlacesScreenState createState() => _SearchPlacesScreenState();
 }
 
 
 
 
-class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
+class _SearchPlacesScreenState extends State<SearchPlacesScreen>
 {
-  List<PredictedPlaces> placesPredictedList2 = [];
+  List<PredictedPlaces> placesPredictedList = [];
 
-  void findPlaceAutoCompleteSearch2(String inputText) async
+  void findPlaceAutoCompleteSearch(String inputText) async
   {
     if(inputText.length > 1) //2 or more than 2 input characters
         {
@@ -40,10 +38,10 @@ class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
       {
         var placePredictions = responseAutoCompleteSearch["predictions"];
 
-        var placePredictionsList2 = (placePredictions as List).map((jsonData) => PredictedPlaces.fromJson(jsonData)).toList();
+        var placePredictionsList = (placePredictions as List).map((jsonData) => PredictedPlaces.fromJson(jsonData)).toList();
 
         setState(() {
-          placesPredictedList2 = placePredictionsList2;
+          placesPredictedList = placePredictionsList;
         });
       }
     }
@@ -53,14 +51,14 @@ class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
   Widget build(BuildContext context)
   {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: Column(
         children: [
           //search place ui
           Container(
             height: 160,
             decoration: const BoxDecoration(
-              color: Color(0xff416d6d),
+              color: Colors.black54,
               boxShadow:
               [
                 BoxShadow(
@@ -97,7 +95,7 @@ class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
 
                       const Center(
                         child: Text(
-                          "Search & Set 2nd DropOff",
+                          "Search & Set DropOff Location",
                           style: TextStyle(
                             fontSize: 18.0,
                             color: Colors.grey,
@@ -126,7 +124,7 @@ class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
                           child: TextField(
                             onChanged: (valueTyped)
                             {
-                              findPlaceAutoCompleteSearch2(valueTyped);
+                              findPlaceAutoCompleteSearch(valueTyped);
                             },
                             decoration: const InputDecoration(
                               hintText: "search here...",
@@ -151,22 +149,22 @@ class _SearchPlacesScreen2State extends State<SearchPlacesScreen2>
           ),
 
           //display place predictions result
-          (placesPredictedList2.length > 0)
+          (placesPredictedList.length > 0)
               ? Expanded(
             child: ListView.separated(
-              itemCount: placesPredictedList2.length,
+              itemCount: placesPredictedList.length,
               physics: ClampingScrollPhysics(),
               itemBuilder: (context, index)
               {
-                return PlacePredictionTileDesign2(
-                  predictedPlaces: placesPredictedList2[index],
+                return PlacePredictionTileDesign(
+                  predictedPlaces: placesPredictedList[index],
                 );
               },
               separatorBuilder: (BuildContext context, int index)
               {
                 return const Divider(
                   height: 1,
-                  color: Colors.black,
+                  color: Colors.white,
                   thickness: 1,
                 );
               },

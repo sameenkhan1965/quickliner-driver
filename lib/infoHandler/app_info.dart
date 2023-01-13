@@ -6,7 +6,7 @@ import '../models/trips_history_model.dart';
 
 class AppInfo extends ChangeNotifier
 {
-  Directions? userPickUpLocation, userDropOffLocation, userDropOffLocation2,  userDropOffLocation3 ;
+  Directions? userPickUpLocation, userDropOffLocation;
   int countTotalTrips = 0;
   String driverTotalEarnings = "0";
   String driverAverageRatings = "0";
@@ -20,29 +20,11 @@ class AppInfo extends ChangeNotifier
     notifyListeners();
   }
 
-
-
-
-
-  // three drop offadreesses for broadcast
   void updateDropOffLocationAddress(Directions dropOffAddress)
   {
     userDropOffLocation = dropOffAddress;
     notifyListeners();
   }
-
-  void updateDropOffLocationAddress2(Directions dropOffAddress)
-  {
-    userDropOffLocation2 = dropOffAddress;
-    notifyListeners();
-  }
-
-  void updateDropOffLocationAddress3(Directions dropOffAddress)
-  {
-    userDropOffLocation3 = dropOffAddress;
-    notifyListeners();
-  }
-
 
   updateOverAllTripsCounter(int overAllTripsCounter)
   {

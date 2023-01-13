@@ -69,6 +69,28 @@ class PushNotificationSystem
         String userPhone = (snapData.snapshot.value! as Map)["userPhone"];
         String noOfSeats = (snapData.snapshot.value! as Map)["noOfSeats"];
 
+
+        String scheduleDate = "";
+        String scheduleTime = "";
+
+        String stratDate = "";
+        String endDate = "";
+        String startTimeO = "";
+        String startTimeD = "";
+        if((snapData.snapshot.value! as Map)['rideType']=="scheduleRide"){
+           scheduleDate = (snapData.snapshot.value! as Map)["scheduleDate"];
+           scheduleTime = (snapData.snapshot.value! as Map)["scheduleTime"];
+
+        }
+        else if((snapData.snapshot.value! as Map)['rideType']=="permanentRide"){
+          stratDate = (snapData.snapshot.value! as Map)['startDate'];
+          endDate = (snapData.snapshot.value! as Map)['endDate'];
+          startTimeO = (snapData.snapshot.value! as Map)['pickupOriginTime'];
+          startTimeD = (snapData.snapshot.value! as Map)['pickupDestinationTime'];
+        }
+        // scheduleDate
+        // scheduleTime
+
         String? rideRequestId = snapData.snapshot.key;
 
         UserRideRequestInformation userRideRequestDetails = UserRideRequestInformation();
@@ -84,6 +106,15 @@ class PushNotificationSystem
 
         userRideRequestDetails.rideRequestId = rideRequestId;
         userRideRequestDetails.noOfSeats = noOfSeats;
+
+        userRideRequestDetails.scheduleTime = scheduleTime;
+        userRideRequestDetails.scheduleDate = scheduleDate;
+        userRideRequestDetails.startDate = stratDate;
+        userRideRequestDetails.endDate = endDate;
+        userRideRequestDetails.startTimeO = startTimeO;
+        userRideRequestDetails.startTimeD = startTimeD;
+        userRideRequestDetails.rideType=(snapData.snapshot.value! as Map)['rideType'];
+        // print("ride tpe--->> ${userRideRequestDetails.rideType}");
 
         showDialog(
           context: context,
